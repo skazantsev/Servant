@@ -81,9 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\WinServicesController.cs" />
-    <Compile Include="Queries\GetServiceInfoQuery.cs" />
-    <Compile Include="Services\WinServiceManager.cs" />
     <Compile Include="Models\WinService.cs" />
+    <Compile Include="Queries\WinServiceByNameQuery.cs" />
+    <Compile Include="Services\WinServiceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ServantServiceHost.cs" />
     <Compile Include="Startup.cs" />

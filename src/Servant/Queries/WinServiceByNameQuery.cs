@@ -1,6 +1,6 @@
 ﻿namespace Servant.Queries
 {
-    public class GetServiceInfoQuery
+    public class WinServiceByNameQuery
     {
         public string Name { get; set; }
     }

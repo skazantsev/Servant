@@ -15,6 +15,11 @@ namespace Servant
         {
             var config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
+                "WinService",
+                "api/winservices/{serviceName}",
+                new { controller = "winservices" });
+
+            config.Routes.MapHttpRoute(
                 "DefaultApi",
                 "api/{controller}/{id}",
                 new { id = RouteParameter.Optional });
