@@ -60,6 +60,15 @@ namespace Servant.Services
             service.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
         }
 
+        public void RestartService(string serviceName)
+        {
+            var service = GetService(serviceName);
+            service.Stop();
+            service.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
+            service.Start();
+            service.WaitForStatus(ServiceControllerStatus.Running, ServiceStartTimeout);
+        }
+
         private static ServiceController GetService(string serviceName)
         {
             var service = ServiceController.GetServices()

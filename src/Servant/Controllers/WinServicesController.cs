@@ -41,6 +41,9 @@ namespace Servant.Controllers
                 case "STOP":
                     manager.StopService(serviceName);
                     break;
+                case "RESTART":
+                    manager.RestartService(serviceName);
+                    break;
                 default:
                     return BadRequest("Invalid command");
             }
