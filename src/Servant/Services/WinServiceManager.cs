@@ -1,12 +1,19 @@
-﻿using Servant.Models;
+﻿using Servant.Exceptions;
+using Servant.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.ServiceProcess;
 
 namespace Servant.Services
 {
     public class WinServiceManager
     {
+        private static readonly TimeSpan ServiceStartTimeout = TimeSpan.FromSeconds(20);
+
+        private static readonly TimeSpan ServiceStopTimeout = TimeSpan.FromSeconds(20);
+
         public List<WinService.SimpleInfo> GetServices(string serviceName)
         {
             serviceName = (serviceName ?? "").Replace("'", @"\'");
@@ -37,6 +44,30 @@ namespace Servant.Services
                 Account = service["StartName"]?.ToString(),
                 PathName = service["PathName"]?.ToString()
             };
+        }
+
+        public void StartService(string serviceName)
+        {
+            var service = GetService(serviceName);
+            service.Start();
+            service.WaitForStatus(ServiceControllerStatus.Running, ServiceStartTimeout);
+        }
+
+        public void StopService(string serviceName)
+        {
+            var service = GetService(serviceName);
+            service.Stop();
+            service.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
+        }
+
+        private static ServiceController GetService(string serviceName)
+        {
+            var service = ServiceController.GetServices()
+                .FirstOrDefault(x => x.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (service == null)
+                throw new ServantException("The service is not found.");
+            return service;
         }
 
         private static IEnumerable<ManagementBaseObject> GetServicesImpl(SelectQuery query)

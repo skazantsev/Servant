@@ -54,12 +54,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
@@ -81,8 +83,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\WinServicesController.cs" />
+    <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Models\WinService.cs" />
-    <Compile Include="Queries\WinServiceByNameQuery.cs" />
+    <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
+    <Compile Include="RequestParams\WinServiceCommandRequest.cs" />
     <Compile Include="Services\WinServiceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ServantServiceHost.cs" />
