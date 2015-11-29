@@ -1,25 +1,37 @@
-﻿using Servant.Models;
+﻿using Servant.Exceptions;
+using Servant.Models;
 using Servant.RequestParams;
 using Servant.Services;
+using Servant.Validation;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Web.Http;
 
 namespace Servant.Controllers
 {
+    [ApiExceptionFilter]
+    [ValidationActionFilter]
     public class WinServicesController : ApiController
     {
-        [HttpGet]
-        public IEnumerable<WinService.SimpleInfo> GetServices([FromUri]WinServiceByNameRequest query)
+        private readonly WinServiceManager _serviceManager;
+
+        public WinServicesController()
         {
-            var manager = new WinServiceManager();
-            return manager.GetServices(query.Name);
+            _serviceManager = new WinServiceManager();
         }
 
         [HttpGet]
-        public IHttpActionResult GetServiceInfo(string serviceName)
+        public IEnumerable<WinService.SimpleInfo> GetServices([FromUri]WinServiceByNameRequest query)
         {
-            var manager = new WinServiceManager();
-            var service = manager.GetServiceInfo(serviceName);
+            return _serviceManager.GetServices(query.Name);
+        }
+
+        [HttpGet]
+        public IHttpActionResult GetServiceInfo([Required]string serviceName)
+        {
+            var service = _serviceManager.GetServiceInfo(serviceName);
             if (service == null)
                 return NotFound();
 
@@ -27,27 +39,35 @@ namespace Servant.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult PostCommand([FromUri]string serviceName, [FromBody]WinServiceCommandRequest command)
+        public IHttpActionResult PostCommand([FromUri][Required]string serviceName, [FromBody]WinServiceCommandRequest command)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var manager = new WinServiceManager();
             switch (command.Action.ToUpper())
             {
                 case "START":
-                    manager.StartService(serviceName);
+                    _serviceManager.StartService(serviceName);
                     break;
                 case "STOP":
-                    manager.StopService(serviceName);
+                    _serviceManager.StopService(serviceName);
                     break;
                 case "RESTART":
-                    manager.RestartService(serviceName);
+                    _serviceManager.RestartService(serviceName);
+                    break;
+                case "SET-STARTTYPE":
+                    SetStartType(serviceName, command.Value);
                     break;
                 default:
                     return BadRequest("Invalid command");
             }
             return Ok();
+        }
+
+        private void SetStartType(string serviceName, string startType)
+        {
+            ServiceStartType startTypeEnum;
+            if (string.IsNullOrEmpty(startType) || !Enum.TryParse(startType, true, out startTypeEnum))
+                throw new ServantApiException(HttpStatusCode.BadRequest, "A value for startType is invalid.");
+
+            _serviceManager.SetStartType(serviceName, startType);
         }
     }
 }

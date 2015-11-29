@@ -16,60 +16,65 @@ namespace Servant.Services
 
         public List<WinService.SimpleInfo> GetServices(string serviceName)
         {
-            serviceName = (serviceName ?? "").Replace("'", @"\'");
-            var query = string.IsNullOrEmpty(serviceName)
-                ? "SELECT * FROM Win32_Service"
-                : $"SELECT * FROM Win32_Service WHERE Name LIKE '%{serviceName}%'";
+            var services = string.IsNullOrEmpty(serviceName)
+                ? GetAllServices()
+                : FindServices(serviceName);
 
-            var services = GetServicesImpl(new SelectQuery(query));
-            return services.Select(x => new WinService.SimpleInfo { ServiceName = x["Name"]?.ToString() }).ToList();
+            return services.Select(x => x.GetSimpleInfo()).ToList();
         }
 
         public WinService.FullInfo GetServiceInfo(string serviceName)
         {
-            serviceName = (serviceName ?? "").Replace("'", @"\'");
-            var query = $"SELECT * FROM Win32_Service WHERE Name='{serviceName}'";
-
-            var service = GetServicesImpl(new SelectQuery(query)).FirstOrDefault();
-            if (service == null)
-                return null;
-
-            return new WinService.FullInfo
-            {
-                ServiceName = service["Name"]?.ToString(),
-                DisplayName = service["DisplayName"]?.ToString(),
-                Description = service["Description"]?.ToString(),
-                State = service["State"]?.ToString(),
-                StartMode = service["StartMode"]?.ToString(),
-                Account = service["StartName"]?.ToString(),
-                PathName = service["PathName"]?.ToString()
-            };
+            var service = GetService(serviceName);
+            return service?.GetFullInfo();
         }
 
         public void StartService(string serviceName)
         {
-            var service = GetService(serviceName);
-            service.Start();
-            service.WaitForStatus(ServiceControllerStatus.Running, ServiceStartTimeout);
+            var serviceCtrl = GetServiceController(serviceName);
+            serviceCtrl.Start();
+            serviceCtrl.WaitForStatus(ServiceControllerStatus.Running, ServiceStartTimeout);
         }
 
         public void StopService(string serviceName)
         {
-            var service = GetService(serviceName);
-            service.Stop();
-            service.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
+            var serviceCtrl = GetServiceController(serviceName);
+            serviceCtrl.Stop();
+            serviceCtrl.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
         }
 
         public void RestartService(string serviceName)
         {
-            var service = GetService(serviceName);
+            var service = GetServiceController(serviceName);
             service.Stop();
             service.WaitForStatus(ServiceControllerStatus.Stopped, ServiceStopTimeout);
             service.Start();
             service.WaitForStatus(ServiceControllerStatus.Running, ServiceStartTimeout);
         }
 
-        private static ServiceController GetService(string serviceName)
+        public void SetStartType(string serviceName, string startType)
+        {
+            var service = GetService(serviceName);
+            service.ChangeStartMode(startType);
+        }
+
+        private static IEnumerable<WinService> GetAllServices()
+        {
+            return QueryWmi(new SelectQuery("SELECT * FROM Win32_Service"));
+        }
+
+        private static IEnumerable<WinService> FindServices(string searchQuery)
+        {
+            return QueryWmi(new SelectQuery($"SELECT * FROM Win32_Service WHERE Name LIKE '%{EscapeQueryParam(searchQuery)}%'"));
+        }
+
+        private static WinService GetService(string serviceName)
+        {
+            var services = QueryWmi(new SelectQuery($"SELECT * FROM Win32_Service WHERE Name='{EscapeQueryParam(serviceName)}'"));
+            return services.FirstOrDefault();
+        }
+
+        private static ServiceController GetServiceController(string serviceName)
         {
             var service = ServiceController.GetServices()
                 .FirstOrDefault(x => x.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase));
@@ -79,13 +84,18 @@ namespace Servant.Services
             return service;
         }
 
-        private static IEnumerable<ManagementBaseObject> GetServicesImpl(SelectQuery query)
+        private static IEnumerable<WinService> QueryWmi(SelectQuery query)
         {
             var scope = new ManagementScope(@"root\CIMv2", new ConnectionOptions { Impersonation = ImpersonationLevel.Impersonate });
             using (var searcher = new ManagementObjectSearcher(scope, query))
             {
-                return searcher.Get().Cast<ManagementBaseObject>();
+                return searcher.Get().Cast<ManagementObject>().Select(x => new WinService(x));
             }
+        }
+
+        private static string EscapeQueryParam(string queryParam)
+        {
+            return (queryParam ?? "").Replace("'", @"\'");
         }
     }
 }

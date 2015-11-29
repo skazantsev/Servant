@@ -83,7 +83,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\WinServicesController.cs" />
+    <Compile Include="Exceptions\ApiExceptionFilterAttribute.cs" />
+    <Compile Include="Exceptions\ServantApiException.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
+    <Compile Include="Models\ServiceStartType.cs" />
     <Compile Include="Models\WinService.cs" />
     <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
     <Compile Include="RequestParams\WinServiceCommandRequest.cs" />
@@ -92,6 +95,7 @@
     <Compile Include="ServantServiceHost.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ValidationActionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
