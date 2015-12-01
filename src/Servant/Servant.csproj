@@ -86,11 +86,11 @@
     <Compile Include="Exceptions\ApiExceptionFilterAttribute.cs" />
     <Compile Include="Exceptions\ServantApiException.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
-    <Compile Include="Models\ServiceStartType.cs" />
-    <Compile Include="Models\WinService.cs" />
+    <Compile Include="Services\WinService\ServiceStartType.cs" />
+    <Compile Include="Services\WinService\WinServiceItem.cs" />
     <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
     <Compile Include="RequestParams\WinServiceCommandRequest.cs" />
-    <Compile Include="Services\WinServiceManager.cs" />
+    <Compile Include="Services\WinService\WinServiceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ServantServiceHost.cs" />
     <Compile Include="Startup.cs" />
@@ -102,6 +102,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Servant.Common\Servant.Common.csproj">
+      <Project>{f5e1530e-dc76-4b1d-b659-130602f69999}</Project>
+      <Name>Servant.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

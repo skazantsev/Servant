@@ -1,15 +1,16 @@
-﻿using Servant.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Management;
+using Servant.Common.Entities;
+using Servant.Exceptions;
 
-namespace Servant.Models
+namespace Servant.Services.WinService
 {
-    public class WinService
+    public class WinServiceItem
     {
         private readonly ManagementObject _managementObject;
 
-        public WinService(ManagementObject managementObject)
+        public WinServiceItem(ManagementObject managementObject)
         {
             if (managementObject == null)
                 throw new ArgumentNullException(nameof(managementObject));
@@ -17,17 +18,17 @@ namespace Servant.Models
             _managementObject = managementObject;
         }
 
-        public SimpleInfo GetSimpleInfo()
+        public WinServiceSimpleInfo GetSimpleInfo()
         {
-            return new SimpleInfo
+            return new WinServiceSimpleInfo
             {
                 ServiceName = _managementObject["Name"]?.ToString()
             };
         }
 
-        public FullInfo GetFullInfo()
+        public WinServiceFullInfo GetFullInfo()
         {
-            return new FullInfo
+            return new WinServiceFullInfo
             {
                 ServiceName = _managementObject["Name"]?.ToString(),
                 DisplayName = _managementObject["DisplayName"]?.ToString(),
@@ -82,27 +83,5 @@ namespace Servant.Models
             {23, "The service exists in the database of services available from the system." },
             {24, "The service is currently paused in the system." }
         };
-
-        public class SimpleInfo
-        {
-            public string ServiceName { get; set; }
-        }
-
-        public class FullInfo
-        {
-            public string ServiceName { get; set; }
-
-            public string DisplayName { get; set; }
-
-            public string Description { get; set; }
-
-            public string State { get; set; }
-
-            public string StartMode { get; set; }
-
-            public string Account { get; set; }
-
-            public string PathName { get; set; }
-        }
     }
 }

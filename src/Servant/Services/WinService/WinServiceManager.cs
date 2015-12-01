@@ -1,12 +1,12 @@
-﻿using Servant.Exceptions;
-using Servant.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.ServiceProcess;
+using Servant.Common.Entities;
+using Servant.Exceptions;
 
-namespace Servant.Services
+namespace Servant.Services.WinService
 {
     public class WinServiceManager
     {
@@ -14,7 +14,7 @@ namespace Servant.Services
 
         private static readonly TimeSpan ServiceStopTimeout = TimeSpan.FromSeconds(20);
 
-        public List<WinService.SimpleInfo> GetServices(string serviceName)
+        public List<WinServiceSimpleInfo> GetServices(string serviceName)
         {
             var services = string.IsNullOrEmpty(serviceName)
                 ? GetAllServices()
@@ -23,7 +23,7 @@ namespace Servant.Services
             return services.Select(x => x.GetSimpleInfo()).ToList();
         }
 
-        public WinService.FullInfo GetServiceInfo(string serviceName)
+        public WinServiceFullInfo GetServiceInfo(string serviceName)
         {
             var service = GetService(serviceName);
             return service?.GetFullInfo();
@@ -58,17 +58,17 @@ namespace Servant.Services
             service.ChangeStartMode(startType);
         }
 
-        private static IEnumerable<WinService> GetAllServices()
+        private static IEnumerable<WinServiceItem> GetAllServices()
         {
             return QueryWmi(new SelectQuery("SELECT * FROM Win32_Service"));
         }
 
-        private static IEnumerable<WinService> FindServices(string searchQuery)
+        private static IEnumerable<WinServiceItem> FindServices(string searchQuery)
         {
             return QueryWmi(new SelectQuery($"SELECT * FROM Win32_Service WHERE Name LIKE '%{EscapeQueryParam(searchQuery)}%'"));
         }
 
-        private static WinService GetService(string serviceName)
+        private static WinServiceItem GetService(string serviceName)
         {
             var services = QueryWmi(new SelectQuery($"SELECT * FROM Win32_Service WHERE Name='{EscapeQueryParam(serviceName)}'"));
             return services.FirstOrDefault();
@@ -84,12 +84,12 @@ namespace Servant.Services
             return service;
         }
 
-        private static IEnumerable<WinService> QueryWmi(SelectQuery query)
+        private static IEnumerable<WinServiceItem> QueryWmi(SelectQuery query)
         {
             var scope = new ManagementScope(@"root\CIMv2", new ConnectionOptions { Impersonation = ImpersonationLevel.Impersonate });
             using (var searcher = new ManagementObjectSearcher(scope, query))
             {
-                return searcher.Get().Cast<ManagementObject>().Select(x => new WinService(x));
+                return searcher.Get().Cast<ManagementObject>().Select(x => new WinServiceItem(x));
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Servant.Models
+﻿namespace Servant.Services.WinService
 {
     public enum ServiceStartType
     {

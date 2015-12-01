@@ -1,7 +1,7 @@
-﻿using Servant.Exceptions;
-using Servant.Models;
+﻿using Servant.Common.Entities;
+using Servant.Exceptions;
 using Servant.RequestParams;
-using Servant.Services;
+using Servant.Services.WinService;
 using Servant.Validation;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WinService.SimpleInfo> GetServices([FromUri]WinServiceByNameRequest query)
+        public IEnumerable<WinServiceSimpleInfo> GetServices([FromUri]WinServiceByNameRequest query)
         {
             return _serviceManager.GetServices(query.Name);
         }
