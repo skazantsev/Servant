@@ -41,6 +41,9 @@ namespace Servant.Controllers
         [HttpPost]
         public IHttpActionResult PostCommand([FromUri][Required]string serviceName, [FromBody]WinServiceCommandRequest command)
         {
+            if (command == null)
+                return BadRequest("A value for action is not provided.");
+
             switch (command.Action.ToUpper())
             {
                 case "START":
@@ -56,7 +59,7 @@ namespace Servant.Controllers
                     SetStartType(serviceName, command.Value);
                     break;
                 default:
-                    return BadRequest("Invalid command");
+                    return BadRequest($"Unknown action command - '{command.Action}'.");
             }
             return Ok();
         }
@@ -65,7 +68,7 @@ namespace Servant.Controllers
         {
             ServiceStartType startTypeEnum;
             if (string.IsNullOrEmpty(startType) || !Enum.TryParse(startType, true, out startTypeEnum))
-                throw new ServantApiException(HttpStatusCode.BadRequest, "A value for startType is invalid.");
+                throw new ServantApiValidationException("A value for startType is invalid.");
 
             _serviceManager.SetStartType(serviceName, startType);
         }

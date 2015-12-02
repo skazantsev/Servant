@@ -13,8 +13,13 @@ namespace Servant.Exceptions
             {
                 var apiException = actionExecutedContext.Exception as ServantApiException;
                 var statusCode = apiException?.StatusCode ?? HttpStatusCode.InternalServerError;
-                actionExecutedContext.Response =
-                    actionExecutedContext.Request.CreateErrorResponse(statusCode, exception);
+
+                var responseMessage = exception is ServantApiValidationException
+                    ? actionExecutedContext.Request.CreateErrorResponse(statusCode, exception.Message)
+                    : actionExecutedContext.Request.CreateErrorResponse(statusCode, exception);
+
+                    actionExecutedContext.Response = responseMessage;
+                    
             }
         }
     }

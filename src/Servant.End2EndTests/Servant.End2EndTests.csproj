@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\HttpResponse.cs" />
+    <Compile Include="Core\KeyValueList.cs" />
     <Compile Include="Core\RestApiTestClient.cs" />
     <Compile Include="ApiTests\WinServicesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

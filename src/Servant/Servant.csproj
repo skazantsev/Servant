@@ -85,6 +85,7 @@
     <Compile Include="Controllers\WinServicesController.cs" />
     <Compile Include="Exceptions\ApiExceptionFilterAttribute.cs" />
     <Compile Include="Exceptions\ServantApiException.cs" />
+    <Compile Include="Exceptions\ServantApiValidationException.cs.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
