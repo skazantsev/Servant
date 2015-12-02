@@ -93,6 +93,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "start" } };
 
             EnsureServiceIsStopped(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
 
@@ -108,6 +109,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "start" } };
 
             EnsureServiceIsRunning(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
             var jcontent = JObject.Parse(result.Content);
@@ -124,6 +126,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "restart" } };
 
             EnsureServiceIsRunning(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
 
@@ -139,6 +142,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "restart" } };
 
             EnsureServiceIsStopped(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
             var jcontent = JObject.Parse(result.Content);
@@ -155,6 +159,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "stop" } };
 
             EnsureServiceIsRunning(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
 
@@ -170,6 +175,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "stop" } };
 
             EnsureServiceIsStopped(serviceName);
+            await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
             var jcontent = JObject.Parse(result.Content);
@@ -208,8 +214,8 @@ namespace Servant.End2EndTests.ApiTests
         {
             var serviceName = "WinRM";
             var values1 = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "Automatic"}};
-            var values2 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Disabled" } };
-            var values3 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Manual" } };
+            var values2 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Manual" } };
+            var values3 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Disabled" } };
 
             var result1 = await _restApiClient.Post($"/api/winservices/{serviceName}", values1);
             var serviceInfo1 = await GetService(serviceName);
@@ -224,8 +230,8 @@ namespace Servant.End2EndTests.ApiTests
             Assert.Equal(200, (int)result2.Response.StatusCode);
             Assert.Equal(200, (int)result3.Response.StatusCode);
             Assert.Equal("Auto", serviceInfo1.StartMode);
-            Assert.Equal("Disabled", serviceInfo2.StartMode);
-            Assert.Equal("Manual", serviceInfo3.StartMode);
+            Assert.Equal("Manual", serviceInfo2.StartMode);
+            Assert.Equal("Disabled", serviceInfo3.StartMode);
         }
 
         private static void EnsureServiceIsStopped(string serviceName)
@@ -245,6 +251,16 @@ namespace Servant.End2EndTests.ApiTests
             {
                 serviceCtrl.Start();
                 serviceCtrl.WaitForStatus(ServiceControllerStatus.Running);
+            }
+        }
+
+        private async Task EnsureServiceIsNotDisabled(string serviceName)
+        {
+            var service = await GetService(serviceName);
+            if (service.StartMode == "Disabled")
+            {
+                var values = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "Automatic"}};
+                await _restApiClient.Post($"/api/winservices/{serviceName}", values);
             }
         }
 
