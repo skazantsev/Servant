@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+    <ProjectRoot>$(MSBuildProjectDirectory)\..</ProjectRoot>
+    <TestResultsDir>$(ProjectRoot)\testresults</TestResultsDir>
+    <XunitDir>$(ProjectRoot)\tools\xunit</XunitDir>
+    <NuGetExePath>$(ProjectRoot)\tools\nuget\nuget.exe</NuGetExePath>
+    <ServantExeName>Servant.exe</ServantExeName>
+    <ServantExePath>$(ProjectRoot)\src\Servant\bin\$(Configuration)\$(ServantExeName)</ServantExePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Solution Include="$(ProjectRoot)\src\*.sln">
+      <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
+    </Solution>
+  </ItemGroup>
+
+  <ItemGroup>
+    <TestAssemblies Include="$(ProjectRoot)\src\Servant.End2EndTests\bin\$(Configuration)\Servant.End2EndTests.dll"></TestAssemblies>
+  </ItemGroup>
+
+  <UsingTask AssemblyFile="$(XunitDir)\xunit.runner.msbuild.dll"
+             TaskName="Xunit.Runner.MSBuild.xunit"/>
+
+  <UsingTask TaskName="ExecAsync" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
+    <ParameterGroup>
+      <Executable ParameterType="System.String" Required="true" />
+      <Arguments ParameterType="System.String" Required="false" />
+      <WaitToRunMs ParameterType="System.Int32" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Log.LogMessage("Starting {0}...", Executable);
+        var name = System.IO.Path.GetFileNameWithoutExtension(Executable);
+        var processStartInfo = new System.Diagnostics.ProcessStartInfo(Executable) { UseShellExecute = true };
+        System.Diagnostics.Process.Start(processStartInfo);
+        if (WaitToRunMs != default(int))
+        {
+            System.Threading.Thread.Sleep(WaitToRunMs);
+        }
+        Log.LogMessage("Process {0} is started.", name);
+  ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="BuildCmd" DependsOnTargets="Build">
+  </Target>
+
+  <Target Name="BuildAndTestCmd" DependsOnTargets="Build; RunTests">
+  </Target>
+
+  <Target Name="RunTests" DependsOnTargets="RunEndToEndTests">
+  </Target>
+
+  <Target Name="RunEndToEndTests" DependsOnTargets="RunServant; Build">
+    <MakeDir Directories="$(TestResultsDir)" Condition="!Exists('$(TestResultsDir)')" />
+    <xunit Assemblies="@(TestAssemblies)"
+           Html="$(TestResultsDir)\e2e_tests_$([System.DateTime]::Now.ToString(yyyyMMdd_mm-ss)).html"
+           Reporter="verbose" />
+    
+    <CallTarget Targets="KillServant" />
+  </Target>
+
+  <Target Name="RunServant" DependsOnTargets="Build">
+    <ExecAsync Executable="$(ServantExePath)" WaitToRunMs="3000" />
+  </Target>
+
+  <Target Name="KillServant">
+    <Message Text="Killing $(ServantExeName)..." />
+    <Exec Command="taskkill /IM $(ServantExeName)" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="RestorePackages">
+    <MSBuild Targets="Build" Projects="@(Solution)" />
+  </Target>
+
+  <Target Name="Clean">
+    <MSBuild Targets="Clean" Projects="@(Solution)" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="RestorePackages">
+    <MSBuild Targets="Rebuild" Projects="@(Solution)" />
+  </Target>
+
+  <Target Name="RestorePackages">
+    <Exec Command="&quot;$(NuGetExePath)&quot; restore &quot;%(Solution.Identity)&quot;" />
+  </Target>
+</Project>
