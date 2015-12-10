@@ -91,7 +91,8 @@
     <Compile Include="Exceptions\ServantApiValidationException.cs.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
-    <Compile Include="RequestParams\GetFileRequest.cs" />
+    <Compile Include="RequestParams\GetFileRequestParams.cs" />
+    <Compile Include="RequestParams\ListDirectoryRequestParams.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
     <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
@@ -101,7 +102,9 @@
     <Compile Include="ServantServiceHost.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\RootedDirectoryPathAttribute.cs" />
     <Compile Include="Validation\RootedFilePathAttribute.cs" />
+    <Compile Include="Validation\RootedPathAttribute.cs" />
     <Compile Include="Validation\ValidationActionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Servant.Common\Servant.Common.csproj">

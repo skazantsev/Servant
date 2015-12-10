@@ -3,13 +3,13 @@ using System.IO;
 
 namespace Servant.Validation
 {
-    public class RootedFilePathAttribute : RootedPathAttribute
+    public class RootedDirectoryPathAttribute : RootedPathAttribute
     {
         protected override ValidationResult CheckPathExistance(string path)
         {
-            return File.Exists(path)
+            return Directory.Exists(path)
                 ? ValidationResult.Success
-                : new ValidationResult("The file is not exists.");
+                : new ValidationResult("The directory is not exists.");
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Servant.Common.Entities;
 using Servant.Exceptions;
+using Servant.Extensions;
 using Servant.RequestParams;
 using Servant.Validation;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Web;
 using System.Web.Http;
-using Servant.Extensions;
 
 namespace Servant.Controllers
 {
@@ -19,7 +19,7 @@ namespace Servant.Controllers
     public class FileSystemController : ApiController
     {
         [HttpGet]
-        public IHttpActionResult Get([FromUri]GetFileRequest query)
+        public IHttpActionResult Get([FromUri]GetFileRequestParams query)
         {
             const string downloadKey = "download";
 
@@ -45,6 +45,14 @@ namespace Servant.Controllers
                 };
             }
             return ResponseMessage(response);
+        }
+
+        [HttpGet]
+        public IEnumerable<FileSystemInfoModel> List([FromUri]ListDirectoryRequestParams query)
+        {
+            return new DirectoryInfo(query.Path)
+                .GetFileSystemInfos("*", SearchOption.TopDirectoryOnly)
+                .Select(FileSystemInfoModel.FromFSInfo);
         }
     }
 }
