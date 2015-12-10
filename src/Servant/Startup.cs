@@ -17,7 +17,12 @@ namespace Servant
             config.Routes.MapHttpRoute(
                 "WinService",
                 "api/winservices/{serviceName}",
-                new { controller = "winservices" });
+                new { controller = "WinServices" });
+
+            config.Routes.MapHttpRoute(
+                "FileSystem",
+                "api/fs/{action}",
+                new { controller = "FileSystem" });
 
             config.Routes.MapHttpRoute(
                 "DefaultApi",
