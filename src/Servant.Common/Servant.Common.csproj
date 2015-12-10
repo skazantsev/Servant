@@ -40,8 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\WinServiceFullInfo.cs" />
-    <Compile Include="Entities\WinServiceSimpleInfo.cs" />
+    <Compile Include="Entities\FileSystemInfoModel.cs" />
+    <Compile Include="Entities\WinServiceFullInfoModel.cs" />
+    <Compile Include="Entities\WinServiceSimpleInfoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

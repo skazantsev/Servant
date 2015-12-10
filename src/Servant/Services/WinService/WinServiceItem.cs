@@ -18,17 +18,17 @@ namespace Servant.Services.WinService
             _managementObject = managementObject;
         }
 
-        public WinServiceSimpleInfo GetSimpleInfo()
+        public WinServiceSimpleInfoModel GetSimpleInfo()
         {
-            return new WinServiceSimpleInfo
+            return new WinServiceSimpleInfoModel
             {
                 ServiceName = _managementObject["Name"]?.ToString()
             };
         }
 
-        public WinServiceFullInfo GetFullInfo()
+        public WinServiceFullInfoModel GetFullInfo()
         {
-            return new WinServiceFullInfo
+            return new WinServiceFullInfoModel
             {
                 ServiceName = _managementObject["Name"]?.ToString(),
                 DisplayName = _managementObject["DisplayName"]?.ToString(),

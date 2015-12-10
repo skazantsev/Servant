@@ -14,7 +14,7 @@ namespace Servant.Services.WinService
 
         private static readonly TimeSpan ServiceStopTimeout = TimeSpan.FromSeconds(20);
 
-        public List<WinServiceSimpleInfo> GetServices(string serviceName)
+        public List<WinServiceSimpleInfoModel> GetServices(string serviceName)
         {
             var services = string.IsNullOrEmpty(serviceName)
                 ? GetAllServices()
@@ -23,7 +23,7 @@ namespace Servant.Services.WinService
             return services.Select(x => x.GetSimpleInfo()).ToList();
         }
 
-        public WinServiceFullInfo GetServiceInfo(string serviceName)
+        public WinServiceFullInfoModel GetServiceInfo(string serviceName)
         {
             var service = GetService(serviceName);
             return service?.GetFullInfo();

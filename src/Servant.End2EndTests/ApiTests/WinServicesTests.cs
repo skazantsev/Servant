@@ -23,7 +23,7 @@ namespace Servant.End2EndTests.ApiTests
         public async void When_GettingWinServices_Should_ReturnServiceNames()
         {
             var result = await _restApiClient.Get("/api/winservices");
-            var services = JsonConvert.DeserializeObject<List<WinServiceSimpleInfo>>(result.Content);
+            var services = JsonConvert.DeserializeObject<List<WinServiceSimpleInfoModel>>(result.Content);
 
             Assert.Equal(200, (int)result.Response.StatusCode);
             Assert.True(services.Count > 0);
@@ -34,7 +34,7 @@ namespace Servant.End2EndTests.ApiTests
         public async void When_GettingWinServiceInfo_Should_ReturnFullInfo()
         {
             var result = await _restApiClient.Get("/api/winservices/eventlog");
-            var service = JsonConvert.DeserializeObject<WinServiceFullInfo>(result.Content);
+            var service = JsonConvert.DeserializeObject<WinServiceFullInfoModel>(result.Content);
 
             Assert.Equal(200, (int)result.Response.StatusCode);
             Assert.Equal("eventlog", service.ServiceName);
@@ -264,10 +264,10 @@ namespace Servant.End2EndTests.ApiTests
             }
         }
 
-        private async Task<WinServiceFullInfo> GetService(string serviceName)
+        private async Task<WinServiceFullInfoModel> GetService(string serviceName)
         {
             var result = await _restApiClient.Get($"/api/winservices/{serviceName}");
-            return JsonConvert.DeserializeObject<WinServiceFullInfo>(result.Content);
+            return JsonConvert.DeserializeObject<WinServiceFullInfoModel>(result.Content);
         }
     }
 }

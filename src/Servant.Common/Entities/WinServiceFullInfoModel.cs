@@ -1,6 +1,6 @@
 ﻿namespace Servant.Common.Entities
 {
-    public class WinServiceFullInfo
+    public class WinServiceFullInfoModel
     {
         public string ServiceName { get; set; }
 

@@ -23,7 +23,7 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WinServiceSimpleInfo> GetServices([FromUri]WinServiceByNameRequest query)
+        public IEnumerable<WinServiceSimpleInfoModel> GetServices([FromUri]WinServiceByNameRequest query)
         {
             return _serviceManager.GetServices(query.Name);
         }
