@@ -48,6 +48,12 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
+        public IEnumerable<object> Drives()
+        {
+            return DriveInfo.GetDrives().Select(DriveInfoModel.FromDriveInfo);
+        }
+
+        [HttpGet]
         public IEnumerable<FileSystemInfoModel> List([FromUri]ListDirectoryRequestParams query)
         {
             return new DirectoryInfo(query.Path)

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\DriveInfoModel.cs" />
     <Compile Include="Entities\FileSystemInfoModel.cs" />
     <Compile Include="Entities\WinServiceFullInfoModel.cs" />
     <Compile Include="Entities\WinServiceSimpleInfoModel.cs" />
