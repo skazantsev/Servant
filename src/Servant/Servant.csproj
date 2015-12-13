@@ -91,8 +91,8 @@
     <Compile Include="Exceptions\ServantApiValidationException.cs.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
-    <Compile Include="RequestParams\GetFileRequestParams.cs" />
-    <Compile Include="RequestParams\ListDirectoryRequestParams.cs" />
+    <Compile Include="RequestParams\GetFileRequest.cs" />
+    <Compile Include="RequestParams\ListDirectoryRequest.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
     <Compile Include="RequestParams\WinServiceByNameRequest.cs" />

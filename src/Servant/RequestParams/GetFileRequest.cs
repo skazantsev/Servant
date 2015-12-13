@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Servant.RequestParams
 {
-    public class GetFileRequestParams
+    public class GetFileRequest
     {
         [Required]
         [RootedFilePath]
