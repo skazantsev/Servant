@@ -31,9 +31,9 @@ namespace Servant
                 new { controller = "WinServices" });
 
             config.Routes.MapHttpRoute(
-                "FileSystem",
+                "FileSystem_Action",
                 "api/fs/{action}",
-                new { controller = "FileSystem" });
+                new { controller = "FileSystem", action = RouteParameter.Optional });
 
             config.Routes.MapHttpRoute(
                 "DefaultApi",

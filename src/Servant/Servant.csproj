@@ -91,8 +91,11 @@
     <Compile Include="Exceptions\ServantApiValidationException.cs.cs" />
     <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
+    <Compile Include="Helpers\JModelBinder.cs" />
+    <Compile Include="RequestParams\CopyFileRequest.cs" />
     <Compile Include="RequestParams\GetFileRequest.cs" />
     <Compile Include="RequestParams\ListDirectoryRequest.cs" />
+    <Compile Include="Services\FS\FileSystemManager.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
     <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
@@ -110,9 +113,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Servant.Common\Servant.Common.csproj">
       <Project>{f5e1530e-dc76-4b1d-b659-130602f69999}</Project>

@@ -5,6 +5,18 @@ namespace Servant.Exceptions
 {
     public class ServantApiException : Exception
     {
+        public ServantApiException()
+            : this (HttpStatusCode.InternalServerError)
+        { }
+
+        public ServantApiException(string message)
+            : this(HttpStatusCode.InternalServerError, message)
+        { }
+
+        public ServantApiException(string message, Exception innerException)
+            : this(HttpStatusCode.InternalServerError, message, innerException)
+        { }
+
         public ServantApiException(HttpStatusCode statusCode)
             : base("An unspecified error has occured in Servant.")
         {
