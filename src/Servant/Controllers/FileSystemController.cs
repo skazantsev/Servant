@@ -80,8 +80,11 @@ namespace Servant.Controllers
             switch (action.ToUpper())
             {
                 case "COPY":
-                    var model = binder.GetModel<CopyFileRequest>();
-                    return CopyAction(model);
+                    var copyReq = binder.GetModel<CopyFileRequest>();
+                    return CopyAction(copyReq);
+                case "MOVE":
+                    var moveReq = binder.GetModel<MoveFileRequest>();
+                    return MoveAction(moveReq);
                 default:
                     return BadRequest($"Unknown action command - '{action}'.");
             }
@@ -93,6 +96,15 @@ namespace Servant.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             _fileSystemManager.Copy(query.SourcePath, query.DestPath, query.Overwrite);
+            return Ok();
+        }
+
+        private IHttpActionResult MoveAction(MoveFileRequest query)
+        {
+            Validate(query);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            _fileSystemManager.Move(query.SourcePath, query.DestPath, query.Overwrite);
             return Ok();
         }
     }
