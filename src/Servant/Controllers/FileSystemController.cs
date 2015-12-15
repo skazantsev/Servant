@@ -81,10 +81,10 @@ namespace Servant.Controllers
             switch (action.ToUpper())
             {
                 case "COPY":
-                    var copyReq = binder.GetModel<CopyFileRequest>();
+                    var copyReq = binder.GetModel<CopyFSPathRequest>();
                     return InvokeAction(copyReq, c => { _fileSystemManager.Copy(c.SourcePath, c.DestPath, c.Overwrite); });
                 case "MOVE":
-                    var moveReq = binder.GetModel<MoveFileRequest>();
+                    var moveReq = binder.GetModel<MoveFSPathRequest>();
                     return InvokeAction(moveReq, c => { _fileSystemManager.Move(c.SourcePath, c.DestPath, c.Overwrite); });
                 default:
                     return BadRequest($"Unknown action command - '{action}'.");

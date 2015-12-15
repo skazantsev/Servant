@@ -2,7 +2,7 @@
 
 namespace Servant.RequestParams
 {
-    public class CopyFileRequest
+    public class MoveFSPathRequest
     {
         [Required]
         public string SourcePath { get; set; }
