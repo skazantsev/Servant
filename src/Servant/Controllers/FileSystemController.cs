@@ -6,6 +6,7 @@ using Servant.Helpers;
 using Servant.RequestParams;
 using Servant.Services.FS;
 using Servant.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -73,38 +74,29 @@ namespace Servant.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult PostAction([FromBody][Required]JObject query)
+        public IHttpActionResult PostAction([FromBody][Required]JObject command)
         {
-            var binder = new JModelBinder(query);
+            var binder = new JModelBinder(command);
             var action = binder.GetValue<string>("action");
             switch (action.ToUpper())
             {
                 case "COPY":
                     var copyReq = binder.GetModel<CopyFileRequest>();
-                    return CopyAction(copyReq);
+                    return InvokeAction(copyReq, c => { _fileSystemManager.Copy(c.SourcePath, c.DestPath, c.Overwrite); });
                 case "MOVE":
                     var moveReq = binder.GetModel<MoveFileRequest>();
-                    return MoveAction(moveReq);
+                    return InvokeAction(moveReq, c => { _fileSystemManager.Move(c.SourcePath, c.DestPath, c.Overwrite); });
                 default:
                     return BadRequest($"Unknown action command - '{action}'.");
             }
         }
 
-        private IHttpActionResult CopyAction(CopyFileRequest query)
+        private IHttpActionResult InvokeAction<T>(T command, Action<T> action)
         {
-            Validate(query);
+            Validate(command);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            _fileSystemManager.Copy(query.SourcePath, query.DestPath, query.Overwrite);
-            return Ok();
-        }
-
-        private IHttpActionResult MoveAction(MoveFileRequest query)
-        {
-            Validate(query);
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            _fileSystemManager.Move(query.SourcePath, query.DestPath, query.Overwrite);
+            action(command);
             return Ok();
         }
     }
