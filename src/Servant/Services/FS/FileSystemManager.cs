@@ -25,6 +25,14 @@ namespace Servant.Services.FS
                 throw new ServantApiException($"Could not find a file or a directory {source}.");
         }
 
+        public void Delete(string path)
+        {
+            if (File.Exists(path))
+                File.Delete(path);
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+        }
+
         private static void CopyEntireDirectory(DirectoryInfo source, DirectoryInfo dest, bool overwrite)
         {
             foreach (var dir in source.GetDirectories())

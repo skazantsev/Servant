@@ -92,6 +92,7 @@
     <Compile Include="Exceptions\ServantException.cs" />
     <Compile Include="Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="Helpers\JModelBinder.cs" />
+    <Compile Include="RequestParams\DeleteFsPathRequest.cs" />
     <Compile Include="RequestParams\MoveFSPathRequest.cs" />
     <Compile Include="RequestParams\CopyFSPathRequest.cs" />
     <Compile Include="RequestParams\GetFileRequest.cs" />

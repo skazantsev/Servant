@@ -82,10 +82,13 @@ namespace Servant.Controllers
             {
                 case "COPY":
                     var copyReq = binder.GetModel<CopyFSPathRequest>();
-                    return InvokeAction(copyReq, c => { _fileSystemManager.Copy(c.SourcePath, c.DestPath, c.Overwrite); });
+                    return InvokeAction(copyReq, c => _fileSystemManager.Copy(c.SourcePath, c.DestPath, c.Overwrite));
                 case "MOVE":
                     var moveReq = binder.GetModel<MoveFSPathRequest>();
-                    return InvokeAction(moveReq, c => { _fileSystemManager.Move(c.SourcePath, c.DestPath, c.Overwrite); });
+                    return InvokeAction(moveReq, c => _fileSystemManager.Move(c.SourcePath, c.DestPath, c.Overwrite));
+                case "DELETE":
+                    var deleteReq = binder.GetModel<DeleteFsPathRequest>();
+                    return InvokeAction(deleteReq, c => _fileSystemManager.Delete(c.FileSystemPath));
                 default:
                     return BadRequest($"Unknown action command - '{action}'.");
             }
