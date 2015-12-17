@@ -6,7 +6,7 @@ namespace Servant.RequestParams
     public class ListDirectoryRequest
     {
         [Required]
-        [RootedDirectoryPath]
+        [RootedPath]
         public string Path { get; set; }
     }
 }

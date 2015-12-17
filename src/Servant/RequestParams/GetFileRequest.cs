@@ -6,7 +6,7 @@ namespace Servant.RequestParams
     public class GetFileRequest
     {
         [Required]
-        [RootedFilePath]
+        [RootedPath]
         public string Path { get; set; }
     }
 }

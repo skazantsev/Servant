@@ -35,6 +35,8 @@ namespace Servant.Controllers
         {
             const string downloadKey = "download";
 
+            if (!File.Exists(query.Path))
+                return NotFound();
             var response = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StreamContent(File.OpenRead(query.Path))
@@ -66,11 +68,15 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<FileSystemInfoModel> List([FromUri]ListDirectoryRequest query)
+        public IHttpActionResult List([FromUri]ListDirectoryRequest query)
         {
-            return new DirectoryInfo(query.Path)
+            if (!Directory.Exists(query.Path))
+                return NotFound();
+
+            var list = new DirectoryInfo(query.Path)
                 .GetFileSystemInfos("*", SearchOption.TopDirectoryOnly)
                 .Select(FileSystemInfoModel.FromFSInfo);
+            return Ok(list);
         }
 
         [HttpPost]
