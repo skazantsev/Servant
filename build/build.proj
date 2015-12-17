@@ -62,7 +62,8 @@
     <MakeDir Directories="$(TestResultsDir)" Condition="!Exists('$(TestResultsDir)')" />
     <xunit Assemblies="@(TestAssemblies)"
            Html="$(TestResultsDir)\e2e_tests_$([System.DateTime]::Now.ToString(yyyyMMdd_mm-ss)).html"
-           Reporter="verbose" />
+           Reporter="verbose"
+           ContinueOnError="ErrorAndContinue" />
     
     <CallTarget Targets="KillServant" />
   </Target>
