@@ -2,6 +2,7 @@
 using Servant.End2EndTests.Core;
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using Xunit;
@@ -26,7 +27,7 @@ namespace Servant.End2EndTests.ApiTests
             var result = await _restApiClient.Get("/api/fs/get");
             var jcontent = JObject.Parse(result.Content);
 
-            Assert.Equal(400, (int)result.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.NotNull(jcontent["ModelState"]["Path"]);
         }
 
@@ -37,7 +38,7 @@ namespace Servant.End2EndTests.ApiTests
             var result = await _restApiClient.Get($"/api/fs/get?path={filepath}");
             var jcontent = JObject.Parse(result.Content);
 
-            Assert.Equal(400, (int)result.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.NotNull(jcontent["ModelState"]["Path"]);
         }
 
@@ -48,7 +49,7 @@ namespace Servant.End2EndTests.ApiTests
             var result = await _restApiClient.Get($"/api/fs/get?path={filepath}");
             var jcontent = JObject.Parse(result.Content);
 
-            Assert.Equal(400, (int)result.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.NotNull(jcontent["ModelState"]["Path"]);
         }
 
@@ -58,7 +59,7 @@ namespace Servant.End2EndTests.ApiTests
             var filepath = Path.Combine(_tempPath, "subdir/non_existent_file.txt");
             var result = await _restApiClient.Get($"/api/fs/get?path={_tempPath}/subdir/{filepath}");
 
-            Assert.Equal(404, (int)result.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, result.Response.StatusCode);
         }
 
         [Fact]
@@ -67,7 +68,7 @@ namespace Servant.End2EndTests.ApiTests
             var filepath = Path.Combine(_tempPath, "subdir/1.txt");
             var result = await _restApiClient.Get($"/api/fs/get?path={filepath}");
 
-            Assert.Equal(200, (int)result.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
             Assert.IsType(typeof(StreamContent), result.Response.Content);
             Assert.Equal("TEST CONTENT", result.Content);
         }
