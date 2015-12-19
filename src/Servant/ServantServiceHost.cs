@@ -1,5 +1,5 @@
-﻿using Microsoft.Owin.Hosting;
-using System;
+﻿using System;
+using Microsoft.Owin.Hosting;
 
 namespace Servant
 {

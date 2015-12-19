@@ -1,12 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using Servant.Common.Entities;
-using Servant.Exceptions;
-using Servant.Extensions;
-using Servant.Helpers;
-using Servant.RequestParams;
-using Servant.Services.FS;
-using Servant.Validation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -16,6 +8,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
+using Servant.Common.Entities;
+using Servant.Exceptions;
+using Servant.Extensions;
+using Servant.Helpers;
+using Servant.RequestParams;
+using Servant.Services.FS;
+using Servant.Validation;
 
 namespace Servant.Controllers
 {

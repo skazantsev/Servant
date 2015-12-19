@@ -1,13 +1,12 @@
-﻿using Servant.Common.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Http;
+using Servant.Common.Entities;
 using Servant.Exceptions;
 using Servant.RequestParams;
 using Servant.Services.WinService;
 using Servant.Validation;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Web.Http;
 
 namespace Servant.Controllers
 {

@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using Servant.End2EndTests.Core;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using Newtonsoft.Json.Linq;
+using Servant.End2EndTests.Core;
 using Xunit;
 
 namespace Servant.End2EndTests.ApiTests

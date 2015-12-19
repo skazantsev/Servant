@@ -1,5 +1,5 @@
-﻿using Servant.Validation;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Servant.Validation;
 
 namespace Servant.RequestParams
 {

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Servant.Helpers
 {
