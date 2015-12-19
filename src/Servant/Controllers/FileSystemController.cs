@@ -62,7 +62,7 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<object> Drives()
+        public IEnumerable<DriveInfoModel> Drives()
         {
             return DriveInfo.GetDrives().Select(DriveInfoModel.FromDriveInfo);
         }
