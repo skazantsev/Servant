@@ -69,6 +69,10 @@
     <Compile Include="Core\KeyValueList.cs" />
     <Compile Include="Core\RestApiTestClient.cs" />
     <Compile Include="ApiTests\WinServicesTests.cs" />
+    <Compile Include="Helpers\FileSystem\FsInitializer.cs" />
+    <Compile Include="Helpers\FileSystem\DirItem.cs" />
+    <Compile Include="Helpers\FileSystem\FileItem.cs" />
+    <Compile Include="Helpers\FileSystem\FileSystemItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
