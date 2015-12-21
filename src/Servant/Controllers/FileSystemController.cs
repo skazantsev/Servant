@@ -88,25 +88,46 @@ namespace Servant.Controllers
             {
                 case "COPY":
                     var copyReq = binder.GetModel<CopyFSPathRequest>();
-                    return InvokeAction(copyReq, c => _fileSystemManager.Copy(c.SourcePath, c.DestPath, c.Overwrite));
+                    return InvokeAction(copyReq, Copy);
                 case "MOVE":
                     var moveReq = binder.GetModel<MoveFSPathRequest>();
-                    return InvokeAction(moveReq, c => _fileSystemManager.Move(c.SourcePath, c.DestPath, c.Overwrite));
+                    return InvokeAction(moveReq, Move);
                 case "DELETE":
                     var deleteReq = binder.GetModel<DeleteFsPathRequest>();
-                    return InvokeAction(deleteReq, c => _fileSystemManager.Delete(c.FileSystemPath));
+                    return InvokeAction(deleteReq, Delete);
                 default:
                     return BadRequest($"Unknown action command - '{action}'.");
             }
         }
 
-        private IHttpActionResult InvokeAction<T>(T command, Action<T> action)
+        private IHttpActionResult Copy(CopyFSPathRequest command)
+        {
+            if (!File.Exists(command.SourcePath))
+                return NotFound();
+            _fileSystemManager.Copy(command.SourcePath, command.DestPath, command.Overwrite);
+            return Ok();
+        }
+
+        private IHttpActionResult Move(MoveFSPathRequest command)
+        {
+            if (!File.Exists(command.SourcePath))
+                return NotFound();
+            _fileSystemManager.Move(command.SourcePath, command.DestPath, command.Overwrite);
+            return Ok();
+        }
+
+        private IHttpActionResult Delete(DeleteFsPathRequest command)
+        {
+            _fileSystemManager.Delete(command.FileSystemPath);
+            return Ok();
+        }
+
+        private IHttpActionResult InvokeAction<T>(T command, Func<T, IHttpActionResult> action)
         {
             Validate(command);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            action(command);
-            return Ok();
+            return action(command);
         }
     }
 }
