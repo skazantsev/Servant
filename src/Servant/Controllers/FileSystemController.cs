@@ -83,7 +83,9 @@ namespace Servant.Controllers
         public IHttpActionResult PostAction([FromBody][Required]JObject command)
         {
             var binder = new JModelBinder(command);
-            var action = binder.GetValue<string>("action");
+            var action = binder.GetValue<string>("action") ?? string.Empty;
+            if (string.IsNullOrEmpty(action))
+                return BadRequest("A value for action is not provided.");
             switch (action.ToUpper())
             {
                 case "COPY":
@@ -102,7 +104,7 @@ namespace Servant.Controllers
 
         private IHttpActionResult Copy(CopyFSPathRequest command)
         {
-            if (!File.Exists(command.SourcePath))
+            if (!File.Exists(command.SourcePath) && !Directory.Exists(command.SourcePath))
                 return NotFound();
             _fileSystemManager.Copy(command.SourcePath, command.DestPath, command.Overwrite);
             return Ok();
@@ -110,7 +112,7 @@ namespace Servant.Controllers
 
         private IHttpActionResult Move(MoveFSPathRequest command)
         {
-            if (!File.Exists(command.SourcePath))
+            if (!File.Exists(command.SourcePath) && !Directory.Exists(command.SourcePath))
                 return NotFound();
             _fileSystemManager.Move(command.SourcePath, command.DestPath, command.Overwrite);
             return Ok();

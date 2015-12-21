@@ -169,5 +169,164 @@ namespace Servant.End2EndTests.ApiTests
             Assert.True(drives.Any(x => x.Name.Equals("C:\\", StringComparison.OrdinalIgnoreCase)));
             Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
         }
+
+        [Fact]
+        public async void When_PostingCopyActionWithoutAction_Should_Return400AndValidationMessage()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir/1.txt")},
+                    {"destPath", Path.Combine(fs.TempPath, "dir/2.txt")}
+                };
+                var result = await _restApiClient.Post("/api/fs", values);
+                var jcontent = JParser.ParseContent(result.Content);
+
+                Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
+                Assert.Equal("A value for action is not provided.", jcontent["Message"]);
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyActionWithUnknownAction_Should_Return400AndValidationMessage()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "unknown"},
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir/1.txt")},
+                    {"destPath", Path.Combine(fs.TempPath, "dir/2.txt")}
+                };
+                var result = await _restApiClient.Post("/api/fs", values);
+                var jcontent = JParser.ParseContent(result.Content);
+
+                Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
+                Assert.Equal("Unknown action command - 'unknown'.", jcontent["Message"]);
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyActionWithoutSourcePath_Should_Return400AndValidationMessage()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "COPY"},
+                    {"destPath", Path.Combine(fs.TempPath, "dir/2.txt")}
+                };
+                var result = await _restApiClient.Post("/api/fs", values);
+                var jcontent = JParser.ParseContent(result.Content);
+
+                Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
+                Assert.NotNull(jcontent["ModelState"]["SourcePath"]);
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyActionWithoutDestPath_Should_Return400AndValidationMessage()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "COPY"},
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir/1.txt")}
+                };
+                var result = await _restApiClient.Post("/api/fs", values);
+                var jcontent = JParser.ParseContent(result.Content);
+
+                Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
+                Assert.NotNull(jcontent["ModelState"]["DestPath"]);
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyWithFilePath_Should_CopyFile()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "COPY"},
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir/1.txt")},
+                    {"destPath", Path.Combine(fs.TempPath, "dir/2.txt")}
+                };
+
+                Assert.False(File.Exists(Path.Combine(fs.TempPath, "dir/2.txt")));
+
+                var result = await _restApiClient.Post("/api/fs", values);
+
+                Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+                Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir/2.txt")));
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyActionWithEmptyDirPath_Should_CopyDirectory()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(new DirItem("dir"));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "COPY"},
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir")},
+                    {"destPath", Path.Combine(fs.TempPath, "dir2")}
+                };
+
+                Assert.False(Directory.Exists(Path.Combine(fs.TempPath, "dir2")));
+
+                var result = await _restApiClient.Post("/api/fs", values);
+
+                Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+                Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir2")));
+            }
+        }
+
+        [Fact]
+        public async void When_PostingCopyActionWithDirPathContainingFile_Should_CopyDirectory()
+        {
+            using (var fs = new FsInitializer())
+            {
+                fs.CreateItems(
+                    new DirItem("dir",
+                        new DirItem("subdir",
+                            new FileItem("2.txt")),
+                        new FileItem("1.txt")));
+                var values = new KeyValueList<string, string>
+                {
+                    {"action", "COPY"},
+                    {"sourcePath", Path.Combine(fs.TempPath, "dir")},
+                    {"destPath", Path.Combine(fs.TempPath, "dir2")}
+                };
+
+                Assert.False(Directory.Exists(Path.Combine(fs.TempPath, "dir2")));
+
+                var result = await _restApiClient.Post("/api/fs", values);
+
+                Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+                Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir2")));
+                Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir2\\subdir\\2.txt")));
+                Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir2\\1.txt")));
+            }
+        }
     }
 }

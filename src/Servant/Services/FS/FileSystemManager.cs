@@ -8,21 +8,35 @@ namespace Servant.Services.FS
         public void Copy(string source, string dest, bool overwrite = false)
         {
             if (File.Exists(source))
+            {
                 CopyFile(new FileInfo(source), new FileInfo(dest), overwrite);
+            }
             else if (Directory.Exists(source))
+            {
+                CreateDir(dest, overwrite);
                 CopyEntireDirectory(new DirectoryInfo(source), new DirectoryInfo(dest), overwrite);
+            }
             else
+            {
                 throw new ServantApiException($"Could not find a file or a directory {source}.");
+            }
         }
 
         public void Move(string source, string dest, bool overwrite = false)
         {
             if (File.Exists(source))
+            {
                 MoveFile(new FileInfo(source), new FileInfo(dest), overwrite);
+            }
             else if (Directory.Exists(source))
+            {
+                CreateDir(dest, overwrite);
                 MoveEntireDirectory(new DirectoryInfo(source), new DirectoryInfo(dest), overwrite);
+            }
             else
+            {
                 throw new ServantApiException($"Could not find a file or a directory {source}.");
+            }
         }
 
         public void Delete(string path)
@@ -35,6 +49,8 @@ namespace Servant.Services.FS
 
         private static void CopyEntireDirectory(DirectoryInfo source, DirectoryInfo dest, bool overwrite)
         {
+            if (!dest.Exists)
+                dest.Create();
             foreach (var dir in source.GetDirectories())
             {
                 CopyEntireDirectory(dir, dest.CreateSubdirectory(dir.Name), overwrite);
@@ -69,6 +85,18 @@ namespace Servant.Services.FS
             if (overwrite && File.Exists(dest.FullName))
                 File.Delete(dest.FullName);
             source.MoveTo(dest.FullName);
+        }
+
+        public void CreateDir(string path, bool overwrite)
+        {
+            if (Directory.Exists(path) && overwrite)
+            {
+                Directory.Delete(path, true);
+            }
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }
