@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Servant.Common.Entities;
 using Servant.End2EndTests.Core;
+using Servant.End2EndTests.Helpers;
 using Servant.End2EndTests.Helpers.FileSystem;
 using Xunit;
 
@@ -26,7 +26,7 @@ namespace Servant.End2EndTests.ApiTests
         public async void When_SendingGetWithoutPath_Should_Return400AndValidationMessage()
         {
             var result = await _restApiClient.Get("/api/fs/get");
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.NotNull(jcontent["ModelState"]["Path"]);
@@ -40,7 +40,7 @@ namespace Servant.End2EndTests.ApiTests
                 fs.CreateItems(new FileItem("1.txt"));
                 var filepath = $"{fs.TempPath}/<1>.txt";
                 var result = await _restApiClient.Get($"/api/fs/get?path={filepath}");
-                var jcontent = JObject.Parse(result.Content);
+                var jcontent = JParser.ParseContent(result.Content);
 
                 Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
                 Assert.NotNull(jcontent["ModelState"]["Path"]);
@@ -57,7 +57,7 @@ namespace Servant.End2EndTests.ApiTests
                         new FileItem("1.txt")));
                 var filepath = "dir/1.txt";
                 var result = await _restApiClient.Get($"/api/fs/get?path={filepath}");
-                var jcontent = JObject.Parse(result.Content);
+                var jcontent = JParser.ParseContent(result.Content);
 
                 Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
                 Assert.NotNull(jcontent["ModelState"]["Path"]);

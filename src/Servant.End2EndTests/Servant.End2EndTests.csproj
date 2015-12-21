@@ -73,6 +73,7 @@
     <Compile Include="Helpers\FileSystem\DirItem.cs" />
     <Compile Include="Helpers\FileSystem\FileItem.cs" />
     <Compile Include="Helpers\FileSystem\FileSystemItem.cs" />
+    <Compile Include="Helpers\JParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

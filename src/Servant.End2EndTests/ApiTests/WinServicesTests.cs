@@ -4,9 +4,9 @@ using System.Net;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Servant.Common.Entities;
 using Servant.End2EndTests.Core;
+using Servant.End2EndTests.Helpers;
 using Xunit;
 
 namespace Servant.End2EndTests.ApiTests
@@ -59,7 +59,7 @@ namespace Servant.End2EndTests.ApiTests
         {
             var values = new KeyValueList<string, string>{ { "action", "start" } };
             var result = await _restApiClient.Post("/api/winservices/not-existing-service-name", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
             Assert.Equal("Servant.Exceptions.ServantException", jcontent["ExceptionType"]);
@@ -70,7 +70,7 @@ namespace Servant.End2EndTests.ApiTests
         public async void When_PostingWithoutAction_Should_Return400AndValidationMessage()
         {
             var result = await _restApiClient.Post("/api/winservices/WinRM", new KeyValuePair<string, string>[] { });
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.Equal("A value for action is not provided.", jcontent["Message"]);
@@ -81,7 +81,7 @@ namespace Servant.End2EndTests.ApiTests
         {
             var values = new KeyValueList<string, string> { { "action", "unknown" } };
             var result = await _restApiClient.Post("/api/winservices/WinRM", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.Equal("Unknown action command - 'unknown'.", jcontent["Message"]);
@@ -113,7 +113,7 @@ namespace Servant.End2EndTests.ApiTests
             await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
             Assert.Equal("System.InvalidOperationException", jcontent["ExceptionType"]);
@@ -146,7 +146,7 @@ namespace Servant.End2EndTests.ApiTests
             await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
             Assert.Equal("System.InvalidOperationException", jcontent["ExceptionType"]);
@@ -179,7 +179,7 @@ namespace Servant.End2EndTests.ApiTests
             await EnsureServiceIsNotDisabled(serviceName);
 
             var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
             Assert.Equal("System.InvalidOperationException", jcontent["ExceptionType"]);
@@ -192,7 +192,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> { { "action", "set-starttype" } };
 
             var result = await _restApiClient.Post("/api/winservices/WinRM", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.Equal("A value for startType is invalid.", jcontent["Message"]);
@@ -204,7 +204,7 @@ namespace Servant.End2EndTests.ApiTests
             var values = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "unknown"}};
 
             var result = await _restApiClient.Post("/api/winservices/WinRM", values);
-            var jcontent = JObject.Parse(result.Content);
+            var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
             Assert.Equal("A value for startType is invalid.", jcontent["Message"]);
