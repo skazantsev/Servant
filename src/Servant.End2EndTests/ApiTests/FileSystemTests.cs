@@ -338,7 +338,7 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_CopyingFileToAlreadyExistingPathWithOverwrite_Should_CopyIt()
+        public async void When_CopyingFileToAlreadyExistingPathAndOverwriteSetToTrue_Should_CopyIt()
         {
             using (var fs = new FsInitializer())
             {
@@ -354,7 +354,7 @@ namespace Servant.End2EndTests.ApiTests
                     {"action", "COPY"},
                     {"sourcePath", sourcePath},
                     {"destPath", destPath},
-                    {"overwrite", "1"}
+                    {"overwrite", "true"}
                 };
 
                 var result = await _restApiClient.Post("/api/fs", values);
@@ -424,7 +424,8 @@ namespace Servant.End2EndTests.ApiTests
             }
         }
 
-        [Fact] public async void When_CopyingAlreadyExistingDirectoryWithoutOverwrite_Should_Return500AndNotChangeDestination()
+        [Fact]
+        public async void When_CopyingAlreadyExistingDirectoryWithoutOverwrite_Should_Return500AndNotChangeDestination()
         {
             using (var fs = new FsInitializer())
             {
@@ -457,7 +458,7 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_CopyingAlreadyExistingDirectoryWithOverwrite_Should_CopyEntireDirectory()
+        public async void When_CopyingAlreadyExistingDirectoryWithOverwriteSetToTrue_Should_CopyEntireDirectory()
         {
             using (var fs = new FsInitializer())
             {
@@ -475,7 +476,7 @@ namespace Servant.End2EndTests.ApiTests
                     {"action", "COPY"},
                     {"sourcePath", Path.Combine(fs.TempPath, "dir1")},
                     {"destPath", Path.Combine(fs.TempPath, "dir2")},
-                    {"overwrite", "1"}
+                    {"overwrite", "true"}
                 };
 
                 var result = await _restApiClient.Post("/api/fs", values);
@@ -515,6 +516,14 @@ namespace Servant.End2EndTests.ApiTests
                 var result = await _restApiClient.Post("/api/fs", values);
 
                 Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+
+                // verify source
+                Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir")));
+                Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir\\subdir")));
+                Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir\\subdir\\2.txt")));
+                Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir\\1.txt")));
+
+                // verify destination
                 Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir2")));
                 Assert.True(Directory.Exists(Path.Combine(fs.TempPath, "dir2\\subdir")));
                 Assert.True(File.Exists(Path.Combine(fs.TempPath, "dir2\\subdir\\2.txt")));
