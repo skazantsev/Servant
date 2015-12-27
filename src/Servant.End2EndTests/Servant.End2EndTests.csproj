@@ -65,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiTests\FileSystemTests.cs" />
+    <Compile Include="ApiTests\FileSystemTests_Copy.cs" />
+    <Compile Include="ApiTests\FileSystemTests_Drives.cs" />
+    <Compile Include="ApiTests\FileSystemTests_Get.cs" />
     <Compile Include="Core\HttpResponse.cs" />
     <Compile Include="Core\KeyValueList.cs" />
     <Compile Include="Core\RestApiTestClient.cs" />
