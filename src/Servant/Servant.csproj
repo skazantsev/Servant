@@ -100,7 +100,6 @@
     <Compile Include="Services\FS\FileSystemManager.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
-    <Compile Include="RequestParams\WinServiceByNameRequest.cs" />
     <Compile Include="RequestParams\WinServiceCommandRequest.cs" />
     <Compile Include="Services\WinService\WinServiceManager.cs" />
     <Compile Include="Program.cs" />

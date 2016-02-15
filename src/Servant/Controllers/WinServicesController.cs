@@ -12,6 +12,7 @@ namespace Servant.Controllers
 {
     [ApiExceptionFilter]
     [ValidationActionFilter]
+    [RoutePrefix("api/winservices")]
     public class WinServicesController : ApiController
     {
         private readonly WinServiceManager _serviceManager;
@@ -22,12 +23,14 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WinServiceSimpleInfoModel> GetServices([FromUri]WinServiceByNameRequest query)
+        [Route("")]
+        public IEnumerable<WinServiceSimpleInfoModel> GetServices([FromUri]string q = "")
         {
-            return _serviceManager.GetServices(query.Name);
+            return _serviceManager.GetServices(q);
         }
 
         [HttpGet]
+        [Route("{serviceName}")]
         public IHttpActionResult GetServiceInfo([Required]string serviceName)
         {
             var service = _serviceManager.GetServiceInfo(serviceName);
@@ -38,6 +41,7 @@ namespace Servant.Controllers
         }
 
         [HttpPost]
+        [Route("{serviceName}")]
         public IHttpActionResult PostCommand([FromUri][Required]string serviceName, [FromBody]WinServiceCommandRequest command)
         {
             if (command == null)

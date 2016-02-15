@@ -7,6 +7,7 @@ using Owin;
 
 namespace Servant
 {
+    [Route]
     public class Startup
     {
         public void Configuration(IAppBuilder app)
@@ -25,10 +26,7 @@ namespace Servant
 
         private void ConfigureRoutes(HttpConfiguration config)
         {
-            config.Routes.MapHttpRoute(
-                "WinService",
-                "api/winservices/{serviceName}",
-                new { controller = "WinServices" });
+            config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
                 "FileSystem_Action",
