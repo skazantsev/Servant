@@ -21,6 +21,7 @@ namespace Servant.Controllers
 {
     [ApiExceptionFilter]
     [ValidationActionFilter]
+    [RoutePrefix("api/fs")]
     public class FileSystemController : ApiController
     {
         private readonly FileSystemManager _fileSystemManager;
@@ -31,9 +32,16 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
+        [Route("get")]
         public IHttpActionResult Get([FromUri]GetFileRequest query)
         {
             const string downloadKey = "download";
+
+            if (query?.Path == null)
+            {
+                ModelState.AddModelError("Path", "A value for path is not provided.");
+                return BadRequest(ModelState);
+            }
 
             if (!File.Exists(query.Path))
                 return NotFound();
@@ -62,14 +70,22 @@ namespace Servant.Controllers
         }
 
         [HttpGet]
+        [Route("drives")]
         public IEnumerable<DriveInfoModel> Drives()
         {
             return DriveInfo.GetDrives().Select(DriveInfoModel.FromDriveInfo);
         }
 
         [HttpGet]
+        [Route("list")]
         public IHttpActionResult List([FromUri]ListDirectoryRequest query)
         {
+            if (query?.Path == null)
+            {
+                ModelState.AddModelError("Path", "A value for path is not provided.");
+                return BadRequest(ModelState);
+            }
+
             if (!Directory.Exists(query.Path))
                 return NotFound();
 
@@ -80,6 +96,7 @@ namespace Servant.Controllers
         }
 
         [HttpPost]
+        [Route("")]
         public IHttpActionResult PostAction([FromBody][Required]JObject command)
         {
             var binder = new JModelBinder(command);
