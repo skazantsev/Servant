@@ -97,15 +97,16 @@
     <Compile Include="RequestParams\CopyFSPathRequest.cs" />
     <Compile Include="RequestParams\GetFileRequest.cs" />
     <Compile Include="RequestParams\ListDirectoryRequest.cs" />
+    <Compile Include="RequestParams\SetStartTypeRequest.cs" />
     <Compile Include="Services\FS\FileSystemManager.cs" />
     <Compile Include="Services\WinService\ServiceStartType.cs" />
     <Compile Include="Services\WinService\WinServiceItem.cs" />
-    <Compile Include="RequestParams\WinServiceCommandRequest.cs" />
     <Compile Include="Services\WinService\WinServiceManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ServantServiceHost.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ModelRequiredFilterAttribute.cs" />
     <Compile Include="Validation\RootedPathAttribute.cs" />
     <Compile Include="Validation\ValidationActionFilterAttribute.cs" />
   </ItemGroup>

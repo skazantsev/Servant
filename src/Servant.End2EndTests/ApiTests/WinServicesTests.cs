@@ -78,10 +78,23 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingActionAndServiceDoesNotExist_Should_Return500AndExceptionMessage()
+        public async void When_PostingWithoutAction_Should_Return405()
         {
-            var values = new KeyValueList<string, string>{ { "action", "start" } };
-            var result = await _restApiClient.Post("/api/winservices/not-existing-service-name", values);
+            var result = await _restApiClient.Post("/api/winservices/WinRM");
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, result.Response.StatusCode);
+        }
+
+        [Fact]
+        public async void When_PostingUnknownAction_Should_Return404()
+        {
+            var result = await _restApiClient.Post("/api/winservices/WinRM/unknown");
+            Assert.Equal(HttpStatusCode.NotFound, result.Response.StatusCode);
+        }
+
+        [Fact]
+        public async void When_StartingNonExistingService_Should_Return500AndExceptionMessage()
+        {
+            var result = await _restApiClient.Post("/api/winservices/not-existing-service-name/start");
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
@@ -90,36 +103,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingWithoutAction_Should_Return400AndValidationMessage()
-        {
-            var result = await _restApiClient.Post("/api/winservices/WinRM", new KeyValuePair<string, string>[] { });
-            var jcontent = JParser.ParseContent(result.Content);
-
-            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
-            Assert.Equal("A value for action is not provided.", jcontent["Message"]);
-        }
-
-        [Fact]
-        public async void When_PostingUnknownAction_Should_Return400AndValidationMessage()
-        {
-            var values = new KeyValueList<string, string> { { "action", "unknown" } };
-            var result = await _restApiClient.Post("/api/winservices/WinRM", values);
-            var jcontent = JParser.ParseContent(result.Content);
-
-            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
-            Assert.Equal("Unknown action command - 'unknown'.", jcontent["Message"]);
-        }
-
-        [Fact]
-        public async void When_PostingStartActionAndServiceIsStopped_Should_StartService()
+        public async void When_StartingStoppedService_Should_StartService()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "start" } };
-
-            EnsureServiceIsStopped(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsStopped(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/start");
 
             var serviceCtrl = new ServiceController(serviceName);
             Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
@@ -127,15 +117,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingStartActionAndServiceIsRunning_Should_Return500AndExceptionMessage()
+        public async void When_StartingRunningService_Should_Return500AndExceptionMessage()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "start" } };
-
-            EnsureServiceIsRunning(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsRunning(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/start");
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
@@ -144,15 +132,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingRestartActionAndServiceIsRunning_Should_RestartService()
+        public async void When_RestartingRunning_Should_RestartService()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "restart" } };
-
-            EnsureServiceIsRunning(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsRunning(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/restart");
 
             var serviceCtrl = new ServiceController(serviceName);
             Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
@@ -160,15 +146,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingRestartActionAndServiceIsStopped_Should_RestartService()
+        public async void When_RestartingStoppedService_Should_RestartService()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "restart" } };
-
-            EnsureServiceIsStopped(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsStopped(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/restart");
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
@@ -177,15 +161,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingStopActionAndServiceIsRunning_Should_StopService()
+        public async void When_StoppingRunningService_Should_StopService()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "stop" } };
-
-            EnsureServiceIsRunning(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsRunning(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/stop");
 
             var serviceCtrl = new ServiceController(serviceName);
             Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
@@ -193,15 +175,13 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingStopActionAndServiceIsStopped_Should_StopService()
+        public async void When_StoppingStoppedService_Should_StopService()
         {
             var serviceName = "WinRM";
-            var values = new KeyValueList<string, string> { { "action", "stop" } };
-
-            EnsureServiceIsStopped(serviceName);
             await EnsureServiceIsNotDisabled(serviceName);
+            EnsureServiceIsStopped(serviceName);
 
-            var result = await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+            var result = await _restApiClient.Post($"/api/winservices/{serviceName}/stop");
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.InternalServerError, result.Response.StatusCode);
@@ -210,52 +190,60 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
-        public async void When_PostingSetStartTypeActionWithoutValue_Should_Return400AndValidationMessage()
+        public async void When_SettingStartTypeWithNoValue_Should_Return400AndValidationMessage()
         {
-            var values = new KeyValueList<string, string> { { "action", "set-starttype" } };
-
-            var result = await _restApiClient.Post("/api/winservices/WinRM", values);
+            var result = await _restApiClient.Post("/api/winservices/WinRM/setStartType");
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
-            Assert.Equal("A value for startType is invalid.", jcontent["Message"]);
+            Assert.Equal("The request is invalid.", jcontent["Message"]);
         }
 
         [Fact]
-        public async void When_PostingSetStartTypeActionAndValueIsUnknown_Should_Return400AndValidationMessage()
+        public async void When_SettingStartTypeWithEmptyValue_Should_Return400AndValidationMessage()
         {
-            var values = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "unknown"}};
-
-            var result = await _restApiClient.Post("/api/winservices/WinRM", values);
+            var values = new KeyValueList<string, string> { { "startType", "" } };
+            var result = await _restApiClient.Post("/api/winservices/WinRM/setStartType", values);
             var jcontent = JParser.ParseContent(result.Content);
 
             Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
-            Assert.Equal("A value for startType is invalid.", jcontent["Message"]);
+            Assert.Equal("The request is invalid.", jcontent["Message"]);
         }
 
         [Fact]
-        public async void When_PostingSetStartType_Should_SetServiceStartMode()
+        public async void When_SettingStartTypeWithUnknownValue_Should_Return400AndValidationMessage()
+        {
+            var values = new KeyValueList<string, string> {{"startType", "unknown"}};
+            var result = await _restApiClient.Post("/api/winservices/WinRM/setStartType", values);
+            var jcontent = JParser.ParseContent(result.Content);
+
+            Assert.Equal(HttpStatusCode.BadRequest, result.Response.StatusCode);
+            Assert.Equal("The request is invalid.", jcontent["Message"]);
+        }
+
+        [Fact]
+        public async void When_SettingStartType_Should_SetServiceStartMode()
         {
             var serviceName = "WinRM";
-            var values1 = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "Automatic"}};
-            var values2 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Manual" } };
-            var values3 = new KeyValueList<string, string> { { "action", "set-starttype" }, { "value", "Disabled" } };
+            var values1 = new KeyValueList<string, string> {{"startType", "Automatic"}};
+            var values2 = new KeyValueList<string, string> {{"startType", "Disabled"}};
+            var values3 = new KeyValueList<string, string> {{"startType", "Manual"}};
 
-            var result1 = await _restApiClient.Post($"/api/winservices/{serviceName}", values1);
+            var result1 = await _restApiClient.Post($"/api/winservices/{serviceName}/setStartType", values1);
             var serviceInfo1 = await GetService(serviceName);
 
-            var result2 = await _restApiClient.Post($"/api/winservices/{serviceName}", values2);
+            var result2 = await _restApiClient.Post($"/api/winservices/{serviceName}/setStartType", values2);
             var serviceInfo2 = await GetService(serviceName);
 
-            var result3 = await _restApiClient.Post($"/api/winservices/{serviceName}", values3);
+            var result3 = await _restApiClient.Post($"/api/winservices/{serviceName}/setStartType", values3);
             var serviceInfo3 = await GetService(serviceName);
 
             Assert.Equal(HttpStatusCode.OK, result1.Response.StatusCode);
             Assert.Equal(HttpStatusCode.OK, result2.Response.StatusCode);
             Assert.Equal(HttpStatusCode.OK, result3.Response.StatusCode);
             Assert.Equal("Auto", serviceInfo1.StartMode);
-            Assert.Equal("Manual", serviceInfo2.StartMode);
-            Assert.Equal("Disabled", serviceInfo3.StartMode);
+            Assert.Equal("Disabled", serviceInfo2.StartMode);
+            Assert.Equal("Manual", serviceInfo3.StartMode);
         }
 
         private static void EnsureServiceIsStopped(string serviceName)
@@ -283,8 +271,8 @@ namespace Servant.End2EndTests.ApiTests
             var service = await GetService(serviceName);
             if (service.StartMode == "Disabled")
             {
-                var values = new KeyValueList<string, string> {{"action", "set-starttype"}, {"value", "Automatic"}};
-                await _restApiClient.Post($"/api/winservices/{serviceName}", values);
+                var values = new KeyValueList<string, string> {{"startType", "Automatic"}};
+                await _restApiClient.Post($"/api/winservices/{serviceName}/setStartType", values);
             }
         }
 

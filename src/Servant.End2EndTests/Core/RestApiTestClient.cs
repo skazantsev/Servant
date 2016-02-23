@@ -24,6 +24,11 @@ namespace Servant.End2EndTests.Core
             return new HttpResponse { Content = content, Response = response };
         }
 
+        public Task<HttpResponse> Post(string requestUri)
+        {
+            return Post(requestUri, new List<KeyValuePair<string, string>>());
+        }
+
         public async Task<HttpResponse> Post(string requestUri, IEnumerable<KeyValuePair<string, string>> values)
         {
             var response = await _httpClient.PostAsync(requestUri, new FormUrlEncodedContent(values));

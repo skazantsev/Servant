@@ -42,39 +42,36 @@ namespace Servant.Controllers
         }
 
         [HttpPost]
-        [Route("{serviceName}")]
-        public IHttpActionResult PostCommand([FromUri][Required]string serviceName, [FromBody]WinServiceCommandRequest command)
+        [Route("{serviceName}/start")]
+        public IHttpActionResult Start([FromUri][Required]string serviceName)
         {
-            if (command == null)
-                return BadRequest("A value for action is not provided.");
-
-            switch (command.Action.ToUpper())
-            {
-                case "START":
-                    _serviceManager.StartService(serviceName);
-                    break;
-                case "STOP":
-                    _serviceManager.StopService(serviceName);
-                    break;
-                case "RESTART":
-                    _serviceManager.RestartService(serviceName);
-                    break;
-                case "SET-STARTTYPE":
-                    SetStartType(serviceName, command.Value);
-                    break;
-                default:
-                    return BadRequest($"Unknown action command - '{command.Action}'.");
-            }
+            _serviceManager.StartService(serviceName);
             return Ok();
         }
 
-        private void SetStartType(string serviceName, string startType)
+        [HttpPost]
+        [Route("{serviceName}/stop")]
+        public IHttpActionResult Stop([FromUri][Required]string serviceName)
         {
-            ServiceStartType startTypeEnum;
-            if (string.IsNullOrEmpty(startType) || !Enum.TryParse(startType, true, out startTypeEnum))
-                throw new ServantApiValidationException("A value for startType is invalid.");
+            _serviceManager.StopService(serviceName);
+            return Ok();
+        }
 
-            _serviceManager.SetStartType(serviceName, startType);
+        [HttpPost]
+        [Route("{serviceName}/restart")]
+        public IHttpActionResult Restart([FromUri][Required]string serviceName)
+        {
+            _serviceManager.RestartService(serviceName);
+            return Ok();
+        }
+
+        [HttpPost]
+        [ModelRequiredFilter]
+        [Route("{serviceName}/setStartType")]
+        public IHttpActionResult SetStartType([FromUri][Required]string serviceName, [FromBody]SetStartTypeRequest request)
+        {
+            _serviceManager.SetStartType(serviceName, Enum.GetName(typeof(ServiceStartType), request.StartType));
+            return Ok();
         }
     }
 }
