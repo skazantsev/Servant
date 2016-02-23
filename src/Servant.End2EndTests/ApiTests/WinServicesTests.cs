@@ -32,6 +32,29 @@ namespace Servant.End2EndTests.ApiTests
         }
 
         [Fact]
+        public async void When_GettingWinServicesWithEmptySearchQueryParameter_Should_ReturnServiceNames()
+        {
+            var result = await _restApiClient.Get("/api/winservices?q=");
+            var services = JsonConvert.DeserializeObject<List<WinServiceSimpleInfoModel>>(result.Content);
+
+            Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+            Assert.True(services.Count > 0);
+            Assert.Contains(services, x => x.ServiceName == "eventlog");
+        }
+
+        [Fact]
+        public async void When_GettingWinServicesWithSearchQueryParameter_Should_ReturnFilteredServiceNames()
+        {
+            var result = await _restApiClient.Get("/api/winservices?q=winrm");
+            var services = JsonConvert.DeserializeObject<List<WinServiceSimpleInfoModel>>(result.Content);
+
+            Assert.Equal(HttpStatusCode.OK, result.Response.StatusCode);
+            Assert.True(services.Count > 0);
+            Assert.Contains(services, x => x.ServiceName == "WinRM");
+            Assert.DoesNotContain(services, x => x.ServiceName == "eventlog");
+        }
+
+        [Fact]
         public async void When_GettingWinServiceInfo_Should_ReturnFullInfo()
         {
             var result = await _restApiClient.Get("/api/winservices/eventlog");

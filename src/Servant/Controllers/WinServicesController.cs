@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Http;
+using System.Web.Http.ModelBinding.Binders;
 using Servant.Common.Entities;
 using Servant.Exceptions;
 using Servant.RequestParams;
@@ -24,7 +25,7 @@ namespace Servant.Controllers
 
         [HttpGet]
         [Route("")]
-        public IEnumerable<WinServiceSimpleInfoModel> GetServices([FromUri]string q = "")
+        public IEnumerable<WinServiceSimpleInfoModel> GetServices([FromUri(BinderType = typeof(TypeConverterModelBinder))]string q = "")
         {
             return _serviceManager.GetServices(q);
         }
